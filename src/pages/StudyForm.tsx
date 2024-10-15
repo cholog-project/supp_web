@@ -1,18 +1,11 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { TextField, Button, Container, Typography } from '@mui/material';
 import { CreateStudyForm } from 'model/Study';
 import { useCreateStudy } from 'api/StudyApi';
 import { useNavigate } from 'react-router-dom';
-import { getCookie } from 'util/cookie';
 
 function StudyForm() {
   const navigate = useNavigate();
-  useEffect(() => {
-    const jsessionid = getCookie('JSESSIONID');
-    if (!jsessionid) {
-      navigate('/signin');
-    }
-  }, [navigate]);
 
   const [formData, setFormData] = useState<CreateStudyForm>({
     studyName: '',

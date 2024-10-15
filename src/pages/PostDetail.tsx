@@ -18,7 +18,6 @@ import {
 } from 'api/PostApi';
 import { CommentForm, EachComment, PostDetailInfo } from 'model/Post';
 import { AccountCircle } from '@mui/icons-material';
-import { getCookie } from 'util/cookie';
 
 function PostDetail() {
   const [postInfo, setPostInfo] = useState<PostDetailInfo>();
@@ -27,12 +26,6 @@ function PostDetail() {
     content: '',
   });
   const navigate = useNavigate();
-  useEffect(() => {
-    const jsessionid = getCookie('JSESSIONID');
-    if (!jsessionid) {
-      navigate('/signin');
-    }
-  }, [navigate]);
   const { postId } = useParams<{ postId: string }>();
 
   const handleSubmit = async (e: FormEvent) => {

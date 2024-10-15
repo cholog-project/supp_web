@@ -12,20 +12,14 @@ import { GroupInfo } from 'model/Study';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { useGetPosts } from 'api/PostApi';
 import { PostInfo } from 'model/Post';
-import { getCookie } from 'util/cookie';
+import { useGetInviteUrl } from 'api/InvitationApi';
+import { BASE_URL } from '../constants';
 
 function StudyDetail() {
   const [groupInfo, setGroupInfo] = useState<GroupInfo>();
   const [postInfo, setPostInfo] = useState<PostInfo[]>([]);
-  const navigate = useNavigate();
-  useEffect(() => {
-    const jsessionid = getCookie('JSESSIONID');
-    if (!jsessionid) {
-      navigate('/signin');
-    }
-  }, [navigate]);
   const { groupId } = useParams<{ groupId: string }>();
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchGroup = async () => {
       try {
@@ -40,17 +34,40 @@ function StudyDetail() {
     fetchGroup();
   }, []);
 
+  const handleCopyInvitationUrl = async () => {
+    try {
+      useGetInviteUrl({
+        memberType: 'LEAF',
+        studyId: Number(groupId),
+      }).then((response) => {
+        const baseUrl = `${BASE_URL}`;
+        const fullUrl = new URL(response.invitationLink, baseUrl);
+        const params = new URLSearchParams(fullUrl.search);
+        const token = params.get('token');
+        navigator.clipboard.writeText(`${BASE_URL}/group/join/${token}`);
+        alert('클립보드에 복사되었습니다! 초대링크를 보내보세요');
+      });
+    } catch (err) {
+      alert('클립보드에 복사되었습니다! 초대링크를 보내보세요');
+    }
+  };
+
   return (
     <Container maxWidth="md">
-      <Button variant="contained" onClick={() => navigate('/')}>
-        홈으로
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => navigate(`/group/${groupId}/post/create`)}
-      >
-        질문 작성하기
-      </Button>
+      <Box display="flex" padding={2}>
+        <Button variant="contained" onClick={() => navigate('/')}>
+          홈으로
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => navigate(`/group/${groupId}/post/create`)}
+        >
+          질문 작성하기
+        </Button>
+        <Button variant="contained" onClick={handleCopyInvitationUrl}>
+          초대링크 생성하기
+        </Button>
+      </Box>
       <Box display="flex">
         <Box flexGrow={1} padding={2}>
           <Box>스터디명: {groupInfo?.studyName}</Box>

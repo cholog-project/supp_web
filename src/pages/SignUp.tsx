@@ -40,7 +40,7 @@ function SignUp() {
 
   const handleCheckEmail = () => {
     // TODO : 이메일 중복검사 API 호출하기
-    useEmailCheck(formData.email);
+    useEmailCheck(formData.email).then();
   };
 
   return (
@@ -58,7 +58,7 @@ function SignUp() {
           margin="normal"
           variant="outlined"
         />
-        {/* <Button onClick={handleCheckEmail}>중복검사</Button> */}
+        <Button onClick={handleCheckEmail}>중복검사</Button>
         <TextField
           label="비밀번호"
           name="password"

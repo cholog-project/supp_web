@@ -1,4 +1,4 @@
-import React, { FormEvent, useEffect, useState } from 'react';
+import React, { FormEvent, useState } from 'react';
 import {
   TextField,
   Button,
@@ -12,16 +12,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { CreatePostForm } from 'model/Post';
 import { useCreatePost } from 'api/PostApi';
 import { Examples } from 'constants/Questions';
-import { getCookie } from 'util/cookie';
 
 function PostForm() {
   const navigate = useNavigate();
-  useEffect(() => {
-    const jsessionid = getCookie('JSESSIONID');
-    if (!jsessionid) {
-      navigate('/signin');
-    }
-  }, [navigate]);
   const { groupId } = useParams<{ groupId: string }>();
   const [questionPage, setQuestionPage] = useState<number>(0);
   const [formData, setFormData] = useState<CreatePostForm>({

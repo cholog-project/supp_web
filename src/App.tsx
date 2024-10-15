@@ -7,6 +7,7 @@ import StudyForm from 'pages/StudyForm';
 import StudyDetail from 'pages/StudyDetail';
 import PostForm from 'pages/PostForm';
 import PostDetail from 'pages/PostDetail';
+import Invitation from 'pages/Invitation';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
         <Route path="/group/:groupId" element={<StudyDetail />} />
         <Route path="/group/:groupId/post/create" element={<PostForm />} />
         <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="/group/join/:inviteToken" element={<Invitation />} />
       </Routes>
     </div>
   );
