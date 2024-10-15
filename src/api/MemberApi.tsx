@@ -42,24 +42,20 @@ export const useSignInMember = async (member: SignInMember): Promise<void> => {
 };
 
 // 이메일 중복검사 API 호출
-export const useEmailCheck = async (_email: string): Promise<boolean> => {
+export const useEmailCheck = async (email: string): Promise<Response> => {
   try {
-    const response = await fetch(`${BASE_URL}/member/check-email`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    const response = await fetch(
+      `${BASE_URL}/api/v1/email-validation?email=${email}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
       },
-      body: JSON.stringify({ email: _email }),
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      throw new Error('중복되는 이메일이 존재합니다.');
-    }
-
-    return response.status === 200;
+    );
+    return response;
   } catch (error) {
-    console.error(error);
-    throw new Error('중복되는 이메일이 존재합니다.');
+    throw new Error('오류가 발생했습니다. 관리자에게 문의하세요');
   }
 };

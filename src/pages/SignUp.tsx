@@ -38,9 +38,17 @@ function SignUp() {
       });
   };
 
-  const handleCheckEmail = () => {
-    // TODO : 이메일 중복검사 API 호출하기
-    useEmailCheck(formData.email).then();
+  const handleCheckEmail = async () => {
+    try {
+      const response = await useEmailCheck(formData.email);
+      if (response.ok) {
+        alert('사용 가능한 이메일입니다');
+      } else {
+        alert('이미 존재하는 이메일입니다');
+      }
+    } catch (err) {
+      alert('문제가 발생했습니다');
+    }
   };
 
   return (

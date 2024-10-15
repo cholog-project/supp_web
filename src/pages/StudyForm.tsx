@@ -23,7 +23,7 @@ function StudyForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await useCreateStudy(formData);
+      await useCreateStudy(formData);
       navigate(`/`);
     } catch (error) {
       console.error('스터디 생성 과정에서 문제가 발생했습니다.', error);
