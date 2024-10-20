@@ -53,13 +53,13 @@ function PostForm() {
 
   const handlePrevious = () => {
     setQuestionPage((prevPage) =>
-      prevPage > 0 ? prevPage - 1 : Examples.length - 1
+      prevPage > 0 ? prevPage - 1 : Examples.length - 1,
     );
   };
 
   const handleNext = () => {
     setQuestionPage((prevPage) =>
-      prevPage < Examples.length - 1 ? prevPage + 1 : 0
+      prevPage < Examples.length - 1 ? prevPage + 1 : 0,
     );
   };
 
