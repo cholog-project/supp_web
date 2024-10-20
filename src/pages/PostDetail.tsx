@@ -19,7 +19,7 @@ import {
 } from 'api/PostApi';
 import { CommentForm, EachComment, PostDetailInfo } from 'model/Post';
 import { AccountCircle, Send } from '@mui/icons-material';
-import { usePostStore } from 'stroe/pageStore';
+import { usePostStore } from 'store/pageStore';
 import ReactQuill from 'react-quill';
 
 function PostDetail() {
@@ -90,14 +90,15 @@ function PostDetail() {
         <ReactQuill
           value={postInfo?.eachPost.postDescription}
           readOnly={true}
-          theme="snow"
-          modules={{ toolbar: false }}
+          theme="bubble"
           style={{
             height: 'auto',
             backgroundColor: 'white',
+            borderStyle: 'solid',
           }}
         />
       </Box>
+      {}
       <Box component="form" onSubmit={handleSubmit} sx={{ mb: 3 }}>
         <Paper
           elevation={2}

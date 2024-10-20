@@ -1,14 +1,23 @@
 import { useEffect, useState } from 'react';
-import { Button, Box, Typography, List, Container } from '@mui/material';
+import {
+  Button,
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemText,
+  Container,
+} from '@mui/material';
 import { useGetGroups } from 'api/StudyApi';
 import { GroupInfo } from 'model/Study';
 import { Link, useNavigate } from 'react-router-dom';
-import { useGroupStore } from 'stroe/pageStore';
+import { useGroupStore } from 'store/pageStore';
 
 function Main() {
   const { setGroupId } = useGroupStore();
   const [groupInfo, setGroupInfo] = useState<GroupInfo[]>([]);
   const navigate = useNavigate();
+
   const fetchGroups = async () => {
     try {
       const data = await useGetGroups();
@@ -27,31 +36,68 @@ function Main() {
   }, []);
 
   return (
-    <Container maxWidth="md">
-      <Button variant="contained" onClick={() => navigate('/group/create')}>
-        스터디 생성
-      </Button>
-      <Button variant="contained" onClick={() => navigate('/signin')}>
-        다시 로그인하기
-      </Button>
+    <Container maxWidth="md" sx={{ paddingTop: 4 }}>
+      <Box display="flex" justifyContent="space-between" mb={4}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/group/create')}
+        >
+          스터디 생성
+        </Button>
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={() => navigate('/signin')}
+        >
+          다시 로그인하기
+        </Button>
+      </Box>
       <Box display="flex">
-        <Box flexGrow={1} padding={2}>
-          <Typography variant="h4">🍃</Typography>
+        <Box
+          flexGrow={1}
+          padding={2}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Typography variant="h6" align="center">
+            🍃 초록스터디에 오신것을 환영합니다!! 🍃
+          </Typography>
         </Box>
-        <Box width="250px" height="100vh" bgcolor="#e0f7fa" padding={2}>
-          <Typography variant="h6">스터디 정보</Typography>
+        <Box
+          width="300px"
+          maxHeight="80vh"
+          bgcolor="#e0f7fa"
+          padding={2}
+          sx={{ overflowY: 'auto', borderRadius: 2 }}
+        >
+          <Typography variant="h6" gutterBottom>
+            나의 스터디 정보
+          </Typography>
           <List>
-            {groupInfo.map((info: GroupInfo, index) => (
+            {groupInfo.map((info: GroupInfo) => (
               <Link
-                to={`/group`}
                 key={info.studyId}
+                to={`/group`}
                 onClick={() => setGroupId(info.studyId)}
+                style={{
+                  textDecoration: 'none',
+                }}
               >
-                <Box>
-                  <Box>{index + 1}</Box>
-                  <Box>스터디명: {info.studyName}</Box>
-                  <Box>조직: {info.organization}</Box>
-                </Box>
+                <ListItem
+                  sx={{
+                    border: 2,
+                    borderStyle: 'solid',
+                    borderRadius: 2,
+                    marginBottom: 1,
+                  }}
+                >
+                  <ListItemText
+                    primary={`스터디명: ${info.studyName}`}
+                    secondary={`조직: ${info.organization}`}
+                  />
+                </ListItem>
               </Link>
             ))}
           </List>

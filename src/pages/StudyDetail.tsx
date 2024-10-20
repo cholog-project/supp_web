@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import {
-  Grid2,
   Button,
   Box,
   Container,
   Paper,
   Typography,
+  List,
+  ListItem,
 } from '@mui/material';
 import { useGetGroupDetail } from 'api/StudyApi';
 import { GroupInfo } from 'model/Study';
@@ -14,7 +15,7 @@ import { useGetPosts } from 'api/PostApi';
 import { PostInfo } from 'model/Post';
 import { useGetInviteUrl } from 'api/InvitationApi';
 import { BASE_URL } from '../constants';
-import { useGroupStore, usePostStore } from 'stroe/pageStore';
+import { useGroupStore, usePostStore } from 'store/pageStore';
 import { MemberType } from 'model/Member';
 
 function StudyDetail() {
@@ -56,32 +57,40 @@ function StudyDetail() {
   };
 
   return (
-    <Container maxWidth="md">
-      <Box display="flex" justifyContent="space-between" padding={2}>
-        <Button variant="contained" onClick={() => navigate('/')}>
+    <Container maxWidth="md" sx={{ padding: 2 }}>
+      <Box display="flex" justifyContent="space-between" mb={3}>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => navigate('/')}
+        >
           홈으로
-        </Button>
-        <Button variant="contained" onClick={() => navigate(`/post/create`)}>
-          질문 작성하기
         </Button>
         <Button
           variant="contained"
+          color="secondary"
+          onClick={() => navigate(`/post/create`)}
+        >
+          질문 작성하기
+        </Button>
+        <Button
+          variant="outlined"
           onClick={() => handleCopyInvitationUrl('LEAF')}
         >
           리프(리뷰어) 초대링크 생성하기
         </Button>
         <Button
-          variant="contained"
+          variant="outlined"
           onClick={() => handleCopyInvitationUrl('FRUIT')}
         >
           프룻(참여자) 초대링크 생성하기
         </Button>
       </Box>
-      <Box padding={2}>
+      <Box mb={3}>
         <Typography variant="h5" gutterBottom>
           스터디 정보
         </Typography>
-        <Paper elevation={3} sx={{ padding: 2, marginBottom: 3 }}>
+        <Paper elevation={3} sx={{ padding: 3 }}>
           <Typography variant="h6">스터디명: {groupInfo?.studyName}</Typography>
           <Typography variant="body1">
             조직: {groupInfo?.organization}
@@ -91,21 +100,43 @@ function StudyDetail() {
       <Typography variant="h6" gutterBottom>
         질문 목록
       </Typography>
-      <Grid2 container spacing={3}>
-        {postInfo.map((post) => (
-          <Grid2 key={post.postId}>
-            <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
-              <Link
-                to={`/post`}
-                onClick={() => setPostId(post.postId)}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-              >
-                <Typography variant="body1">{post.postTitle}</Typography>
-              </Link>
-            </Paper>
-          </Grid2>
-        ))}
-      </Grid2>
+      <Box
+        sx={{
+          width: '100%',
+          maxHeight: 400,
+          overflowY: 'auto',
+          bgcolor: 'background.paper',
+          borderRadius: 1,
+        }}
+      >
+        <List>
+          {postInfo.map((post) => (
+            <ListItem
+              key={post.postId}
+              component={Link}
+              to={`/post`}
+              onClick={() => setPostId(post.postId)}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                padding: '20px 20px',
+                marginBottom: '10px',
+                border: 1,
+                borderRadius: 2,
+                color: 'inherit',
+                textDecoration: 'none',
+                transition: 'background-color 0.3s',
+                '&:hover': {
+                  backgroundColor: '#f0f0f0',
+                },
+                width: '100%',
+              }}
+            >
+              <Typography variant="body1">{post.postTitle}</Typography>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
     </Container>
   );
 }

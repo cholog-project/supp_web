@@ -6,13 +6,14 @@ import {
   Typography,
   Box,
   IconButton,
+  Paper,
 } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { CreatePostForm } from 'model/Post';
 import { useCreatePost } from 'api/PostApi';
 import { Examples } from 'constants/Questions';
-import { useGroupStore } from 'stroe/pageStore';
+import { useGroupStore } from 'store/pageStore';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import styles
 
@@ -63,17 +64,31 @@ function PostForm() {
     );
   };
 
+  const handleUseExample = () => {
+    setFormData({
+      ...formData,
+      description: Examples[questionPage],
+    });
+  };
+
   return (
-    <Container maxWidth="md">
-      <Button variant="contained" onClick={() => navigate(`/group`)}>
+    <Container maxWidth="lg" sx={{ paddingTop: 4 }}>
+      <Button
+        variant="contained"
+        onClick={() => navigate(`/group`)}
+        sx={{ mb: 3 }}
+      >
         스터디 홈으로
       </Button>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom align="center">
         질문을 작성해주세요
       </Typography>
       <form onSubmit={handleSubmit}>
         <Box display="flex" mt={2}>
-          <Box flex={1} border={1} borderColor="lightgreen" p={2} mr={2}>
+          <Paper
+            elevation={3}
+            sx={{ flex: 1, borderColor: 'lightgreen', p: 2, mr: 2 }}
+          >
             <Typography variant="h6" gutterBottom>
               질문
             </Typography>
@@ -81,7 +96,11 @@ function PostForm() {
               value={formData.description}
               onChange={handleDescriptionChange}
               theme="snow"
-              style={{ height: '300px', marginBottom: '40px' }}
+              style={{
+                height: '400px',
+                marginBottom: '20px',
+                overflow: 'auto',
+              }}
             />
             <TextField
               label="제목을 작성해 주세요!"
@@ -92,52 +111,67 @@ function PostForm() {
               margin="normal"
               variant="outlined"
             />
-          </Box>
-          <Box
-            flex={1}
-            border={1}
-            borderColor="lightgreen"
-            p={2}
+          </Paper>
+          <Paper
+            elevation={3}
             sx={{
-              minHeight: 200,
-              maxHeight: 400,
+              flex: 1,
+              borderColor: 'lightgreen',
+              p: 2,
+              height: '600px',
               overflowY: 'auto',
             }}
           >
             <Typography variant="h6">
               이런 방식으로 질문을 할 수 있어요!
             </Typography>
+
             <Box
               display="flex"
               alignItems="center"
               justifyContent="space-between"
               mt={2}
             >
-              <IconButton
-                aria-label="previous"
-                onClick={handlePrevious}
-                sx={{ backgroundColor: 'green', color: 'white' }}
-              >
-                <KeyboardArrowLeft />
-              </IconButton>
               <Box flex={1} mx={2}>
-                <Typography
-                  variant="body1"
-                  align="center"
-                  dangerouslySetInnerHTML={{ __html: Examples[questionPage] }}
+                <ReactQuill
+                  value={Examples[questionPage]}
+                  readOnly={true}
+                  theme="bubble"
+                  style={{
+                    height: '400px',
+                    marginBottom: '20px',
+                    borderStyle: 'solid',
+                  }}
                 />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <IconButton
+                    aria-label="previous"
+                    onClick={handlePrevious}
+                    sx={{ backgroundColor: 'green', color: 'white' }}
+                  >
+                    <KeyboardArrowLeft />
+                  </IconButton>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleUseExample}
+                    sx={{ mt: 2 }}
+                  >
+                    양식 사용하기
+                  </Button>
+                  <IconButton
+                    aria-label="next"
+                    onClick={handleNext}
+                    sx={{ backgroundColor: 'green', color: 'white' }}
+                  >
+                    <KeyboardArrowRight />
+                  </IconButton>
+                </Box>
               </Box>
-              <IconButton
-                aria-label="next"
-                onClick={handleNext}
-                sx={{ backgroundColor: 'green', color: 'white' }}
-              >
-                <KeyboardArrowRight />
-              </IconButton>
             </Box>
-          </Box>
+          </Paper>
         </Box>
-        <Box mt={2}>
+        <Box mt={3} mb={3}>
           <Button type="submit" variant="contained" color="primary" fullWidth>
             질문하기
           </Button>
