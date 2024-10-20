@@ -15,6 +15,7 @@ import { PostInfo } from 'model/Post';
 import { useGetInviteUrl } from 'api/InvitationApi';
 import { BASE_URL } from '../constants';
 import { useGroupStore, usePostStore } from 'stroe/pageStore';
+import { MemberType } from 'model/Member';
 
 function StudyDetail() {
   const [groupInfo, setGroupInfo] = useState<GroupInfo>();
@@ -22,6 +23,7 @@ function StudyDetail() {
   const { groupId } = useGroupStore();
   const { setPostId } = usePostStore();
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchGroup = async () => {
       try {
@@ -34,55 +36,71 @@ function StudyDetail() {
       }
     };
     fetchGroup();
-  }, []);
+  }, [groupId, navigate]);
 
-  const handleCopyInvitationUrl = async () => {
+  const handleCopyInvitationUrl = async (type: MemberType) => {
     try {
-      useGetInviteUrl({
-        memberType: 'LEAF',
+      const response = await useGetInviteUrl({
+        memberType: type,
         studyId: Number(groupId),
-      }).then((response) => {
-        const baseUrl = `${BASE_URL}`;
-        const fullUrl = new URL(response.invitationLink, baseUrl);
-        const params = new URLSearchParams(fullUrl.search);
-        const token = params.get('token');
-        navigator.clipboard.writeText(`${BASE_URL}/group/join/${token}`);
-        alert('클립보드에 복사되었습니다! 초대링크를 보내보세요');
       });
-    } catch (err) {
+      const baseUrl = `${BASE_URL}`;
+      const fullUrl = new URL(response.invitationLink, baseUrl);
+      const params = new URLSearchParams(fullUrl.search);
+      const token = params.get('token');
+      navigator.clipboard.writeText(`${BASE_URL}/group/join/${token}`);
       alert('클립보드에 복사되었습니다! 초대링크를 보내보세요');
+    } catch (err) {
+      alert('초대링크 생성 중 오류가 발생했습니다.');
     }
   };
 
   return (
     <Container maxWidth="md">
-      <Box display="flex" padding={2}>
+      <Box display="flex" justifyContent="space-between" padding={2}>
         <Button variant="contained" onClick={() => navigate('/')}>
           홈으로
         </Button>
         <Button variant="contained" onClick={() => navigate(`/post/create`)}>
           질문 작성하기
         </Button>
-        <Button variant="contained" onClick={handleCopyInvitationUrl}>
-          초대링크 생성하기
+        <Button
+          variant="contained"
+          onClick={() => handleCopyInvitationUrl('LEAF')}
+        >
+          리프(리뷰어) 초대링크 생성하기
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => handleCopyInvitationUrl('FRUIT')}
+        >
+          프룻(참여자) 초대링크 생성하기
         </Button>
       </Box>
-      <Box display="flex">
-        <Box flexGrow={1} padding={2}>
-          <Box>스터디명: {groupInfo?.studyName}</Box>
-          <Box>조직: {groupInfo?.organization}</Box>
-        </Box>
+      <Box padding={2}>
+        <Typography variant="h5" gutterBottom>
+          스터디 정보
+        </Typography>
+        <Paper elevation={3} sx={{ padding: 2, marginBottom: 3 }}>
+          <Typography variant="h6">스터디명: {groupInfo?.studyName}</Typography>
+          <Typography variant="body1">
+            조직: {groupInfo?.organization}
+          </Typography>
+        </Paper>
       </Box>
-      <Grid2
-        container
-        spacing={{ xs: 2, md: 3 }}
-        columns={{ xs: 4, sm: 8, md: 12 }}
-      >
-        {postInfo.map((post, index) => (
-          <Grid2 key={post.postId || index}>
+      <Typography variant="h6" gutterBottom>
+        질문 목록
+      </Typography>
+      <Grid2 container spacing={3}>
+        {postInfo.map((post) => (
+          <Grid2 key={post.postId}>
             <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
-              <Link to={`/post`} onClick={() => setPostId(post.postId)}>
-                <Typography>{post.postTitle}</Typography>
+              <Link
+                to={`/post`}
+                onClick={() => setPostId(post.postId)}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+              >
+                <Typography variant="body1">{post.postTitle}</Typography>
               </Link>
             </Paper>
           </Grid2>
