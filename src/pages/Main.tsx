@@ -3,8 +3,10 @@ import { Button, Box, Typography, List, Container } from '@mui/material';
 import { useGetGroups } from 'api/StudyApi';
 import { GroupInfo } from 'model/Study';
 import { Link, useNavigate } from 'react-router-dom';
+import { useGroupStore } from 'stroe/pageStore';
 
 function Main() {
+  const { setGroupId } = useGroupStore();
   const [groupInfo, setGroupInfo] = useState<GroupInfo[]>([]);
   const navigate = useNavigate();
   const fetchGroups = async () => {
@@ -40,7 +42,11 @@ function Main() {
           <Typography variant="h6">스터디 정보</Typography>
           <List>
             {groupInfo.map((info: GroupInfo, index) => (
-              <Link to={`/group/${info.studyId}`} key={info.studyId}>
+              <Link
+                to={`/group/${info.studyId}`}
+                key={info.studyId}
+                onClick={() => setGroupId(info.studyId)}
+              >
                 <Box>
                   <Box>{index + 1}</Box>
                   <Box>스터디명: {info.studyName}</Box>
