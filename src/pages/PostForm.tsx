@@ -8,19 +8,20 @@ import {
   IconButton,
 } from '@mui/material';
 import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { CreatePostForm } from 'model/Post';
 import { useCreatePost } from 'api/PostApi';
 import { Examples } from 'constants/Questions';
+import { useGroupStore } from 'stroe/pageStore';
 
 function PostForm() {
   const navigate = useNavigate();
-  const { groupId } = useParams<{ groupId: string }>();
+  const { groupId } = useGroupStore();
   const [questionPage, setQuestionPage] = useState<number>(0);
   const [formData, setFormData] = useState<CreatePostForm>({
     title: '',
     description: '',
-    studyId: groupId ? Number(groupId) : 0,
+    studyId: groupId,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,7 +36,7 @@ function PostForm() {
     e.preventDefault();
     try {
       await useCreatePost(formData);
-      navigate(`/group/${groupId}`);
+      navigate(`/group`);
     } catch (error) {
       console.error('스터디 생성 과정에서 문제가 발생했습니다.', error);
     }
@@ -55,7 +56,7 @@ function PostForm() {
 
   return (
     <Container maxWidth="md">
-      <Button variant="contained" onClick={() => navigate(`/group/${groupId}`)}>
+      <Button variant="contained" onClick={() => navigate(`/group`)}>
         스터디 홈으로
       </Button>
       <Typography variant="h4" gutterBottom>

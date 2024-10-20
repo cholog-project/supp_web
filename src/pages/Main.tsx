@@ -43,7 +43,7 @@ function Main() {
           <List>
             {groupInfo.map((info: GroupInfo, index) => (
               <Link
-                to={`/group/${info.studyId}`}
+                to={`/group`}
                 key={info.studyId}
                 onClick={() => setGroupId(info.studyId)}
               >

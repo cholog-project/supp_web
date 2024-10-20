@@ -9,22 +9,24 @@ import {
 } from '@mui/material';
 import { useGetGroupDetail } from 'api/StudyApi';
 import { GroupInfo } from 'model/Study';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useGetPosts } from 'api/PostApi';
 import { PostInfo } from 'model/Post';
 import { useGetInviteUrl } from 'api/InvitationApi';
 import { BASE_URL } from '../constants';
+import { useGroupStore, usePostStore } from 'stroe/pageStore';
 
 function StudyDetail() {
   const [groupInfo, setGroupInfo] = useState<GroupInfo>();
   const [postInfo, setPostInfo] = useState<PostInfo[]>([]);
-  const { groupId } = useParams<{ groupId: string }>();
+  const { groupId } = useGroupStore();
+  const { setPostId } = usePostStore();
   const navigate = useNavigate();
   useEffect(() => {
     const fetchGroup = async () => {
       try {
-        const study = await useGetGroupDetail(Number(groupId));
-        const questions = await useGetPosts(Number(groupId));
+        const study = await useGetGroupDetail(groupId);
+        const questions = await useGetPosts(groupId);
         setGroupInfo(study);
         setPostInfo(questions);
       } catch (err) {
@@ -58,10 +60,7 @@ function StudyDetail() {
         <Button variant="contained" onClick={() => navigate('/')}>
           홈으로
         </Button>
-        <Button
-          variant="contained"
-          onClick={() => navigate(`/group/${groupId}/post/create`)}
-        >
+        <Button variant="contained" onClick={() => navigate(`/post/create`)}>
           질문 작성하기
         </Button>
         <Button variant="contained" onClick={handleCopyInvitationUrl}>
@@ -82,7 +81,7 @@ function StudyDetail() {
         {postInfo.map((post, index) => (
           <Grid2 key={post.postId || index}>
             <Paper elevation={3} sx={{ padding: 2, textAlign: 'center' }}>
-              <Link to={`/post/${post.postId}`}>
+              <Link to={`/post`} onClick={() => setPostId(post.postId)}>
                 <Typography>{post.postTitle}</Typography>
               </Link>
             </Paper>

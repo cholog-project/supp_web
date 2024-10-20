@@ -10,7 +10,7 @@ import {
   InputAdornment,
   Input,
 } from '@mui/material';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   useCreateComment,
   useDeleteComment,
@@ -18,22 +18,36 @@ import {
 } from 'api/PostApi';
 import { CommentForm, EachComment, PostDetailInfo } from 'model/Post';
 import { AccountCircle } from '@mui/icons-material';
+import { usePostStore } from 'stroe/pageStore';
 
 function PostDetail() {
+  const fetchPost = async () => {
+    try {
+      const post = await useGetPostDetail(postId);
+      setPostInfo(post);
+    } catch (err) {
+      navigate('/');
+    }
+  };
+
+  useEffect(() => {
+    fetchPost();
+  }, []);
+
+  const { postId } = usePostStore();
   const [postInfo, setPostInfo] = useState<PostDetailInfo>();
   const [commentInfo, setCommentInfo] = useState<CommentForm>({
-    postId: 0,
+    postId: postId,
     content: '',
   });
   const navigate = useNavigate();
-  const { postId } = useParams<{ postId: string }>();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = useCreateComment(commentInfo);
-      response.then(() => {
-        navigate(0);
+      await useCreateComment(commentInfo);
+      fetchPost().then(() => {
+        setCommentInfo({ ...commentInfo, content: '' }); // Clear the input field
       });
     } catch (error) {
       console.error('답변 생성 과정에서 문제가 발생했습니다.', error);
@@ -41,12 +55,10 @@ function PostDetail() {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('call');
     const { name, value } = e.target;
     setCommentInfo({
       ...commentInfo,
       [name]: value,
-      postId: Number(postId),
     });
   };
 
@@ -56,18 +68,6 @@ function PostDetail() {
       navigate(0);
     });
   };
-
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const post = await useGetPostDetail(Number(postId));
-        setPostInfo(post);
-      } catch (err) {
-        navigate('/');
-      }
-    };
-    fetchPost();
-  }, [navigate]);
 
   return (
     <Container maxWidth="md">
@@ -123,6 +123,7 @@ function PostDetail() {
                       id="input-with-icon-adornment"
                       onChange={handleChange}
                       name="content"
+                      value={commentInfo.content}
                       startAdornment={
                         <InputAdornment position="start">
                           <AccountCircle />

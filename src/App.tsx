@@ -17,9 +17,9 @@ function App() {
         <Route path="/signup" element={<SignUp />} />
         <Route path="/signin" element={<SignIn />} />
         <Route path="/group/create" element={<StudyForm />} />
-        <Route path="/group/:groupId" element={<StudyDetail />} />
-        <Route path="/group/:groupId/post/create" element={<PostForm />} />
-        <Route path="/post/:postId" element={<PostDetail />} />
+        <Route path="/group" element={<StudyDetail />} />
+        <Route path="/post/create" element={<PostForm />} />
+        <Route path="/post" element={<PostDetail />} />
         <Route path="/group/join/:inviteToken" element={<Invitation />} />
       </Routes>
     </div>
