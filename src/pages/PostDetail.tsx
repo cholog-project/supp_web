@@ -6,9 +6,10 @@ import {
   Paper,
   Typography,
   List,
-  Grid2,
   InputAdornment,
   Input,
+  IconButton,
+  Divider,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -17,23 +18,11 @@ import {
   useGetPostDetail,
 } from 'api/PostApi';
 import { CommentForm, EachComment, PostDetailInfo } from 'model/Post';
-import { AccountCircle } from '@mui/icons-material';
+import { AccountCircle, Send } from '@mui/icons-material';
 import { usePostStore } from 'stroe/pageStore';
+import ReactQuill from 'react-quill';
 
 function PostDetail() {
-  const fetchPost = async () => {
-    try {
-      const post = await useGetPostDetail(postId);
-      setPostInfo(post);
-    } catch (err) {
-      navigate('/');
-    }
-  };
-
-  useEffect(() => {
-    fetchPost();
-  }, []);
-
   const { postId } = usePostStore();
   const [postInfo, setPostInfo] = useState<PostDetailInfo>();
   const [commentInfo, setCommentInfo] = useState<CommentForm>({
@@ -42,12 +31,25 @@ function PostDetail() {
   });
   const navigate = useNavigate();
 
+  const fetchPost = async () => {
+    try {
+      const post = await useGetPostDetail(postId);
+      setPostInfo(post);
+    } catch (error) {
+      navigate('/');
+    }
+  };
+
+  useEffect(() => {
+    fetchPost();
+  }, []);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       await useCreateComment(commentInfo);
       fetchPost().then(() => {
-        setCommentInfo({ ...commentInfo, content: '' }); // Clear the input field
+        setCommentInfo({ ...commentInfo, content: '' });
       });
     } catch (error) {
       console.error('답변 생성 과정에서 문제가 발생했습니다.', error);
@@ -62,99 +64,93 @@ function PostDetail() {
     });
   };
 
-  const handleDeleteComment = (commentId: number) => {
-    const response = useDeleteComment(commentId);
-    response.then(() => {
-      navigate(0);
-    });
+  const handleDeleteComment = async (commentId: number) => {
+    try {
+      await useDeleteComment(commentId);
+      fetchPost();
+    } catch (error) {
+      console.error('댓글 삭제 중 오류 발생', error);
+    }
   };
 
   return (
     <Container maxWidth="md">
-      <Button variant="contained" onClick={() => navigate(-1)}>
-        이전으로
-      </Button>
-      <Box display="flex" alignItems="baseline">
-        <Box flexGrow={1} padding={2}>
-          <Typography variant="h4">
-            제목 | {postInfo?.eachPost.postTitle}
-          </Typography>
-        </Box>
+      <Box sx={{ my: 3 }}>
+        <Button variant="contained" onClick={() => navigate(-1)}>
+          이전으로
+        </Button>
       </Box>
-      <Grid2
-        container
-        direction="column"
-        sx={{
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        {postInfo && (
-          <>
-            <Grid2>
-              <Paper
-                elevation={2}
-                sx={{
-                  padding: 2,
-                  width: 600,
-                  minHeight: 100,
-                  textAlign: 'center',
-                }}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" gutterBottom>
+          {postInfo?.eachPost.postTitle}
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          작성자 : 익명
+        </Typography>
+        <ReactQuill
+          value={postInfo?.eachPost.postDescription}
+          readOnly={true}
+          theme="snow"
+          modules={{ toolbar: false }}
+          style={{
+            height: 'auto',
+            backgroundColor: 'white',
+          }}
+        />
+      </Box>
+      <Box component="form" onSubmit={handleSubmit} sx={{ mb: 3 }}>
+        <Paper
+          elevation={2}
+          sx={{ display: 'flex', alignItems: 'center', p: 2 }}
+        >
+          <Input
+            fullWidth
+            placeholder="댓글을 입력하세요..."
+            onChange={handleChange}
+            name="content"
+            value={commentInfo.content}
+            startAdornment={
+              <InputAdornment position="start">
+                <AccountCircle />
+              </InputAdornment>
+            }
+          />
+          <IconButton type="submit" color="primary">
+            <Send />
+          </IconButton>
+        </Paper>
+      </Box>
+      <Typography variant="h6" gutterBottom>
+        댓글
+      </Typography>
+      <List>
+        {postInfo?.comments?.map((info: EachComment, index) => (
+          <Box key={index}>
+            <Paper elevation={1} sx={{ p: 2, mb: 2 }}>
+              <Typography variant="body2" color="textSecondary">
+                {index + 1}. 작성자: {info.commentMemberType}
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{ whiteSpace: 'pre-line', mb: 1 }}
               >
-                <Typography variant="body1">
-                  {postInfo.eachPost.postDescription}
-                </Typography>
-              </Paper>
-            </Grid2>
-            <Grid2>
-              <Paper
-                elevation={2}
-                sx={{
-                  marginTop: 5,
-                  padding: 2,
-                  width: 600,
-                  minHeight: 100,
-                  textAlign: 'center',
-                }}
-              >
-                <Box>
-                  <form onSubmit={handleSubmit}>
-                    <Input
-                      id="input-with-icon-adornment"
-                      onChange={handleChange}
-                      name="content"
-                      value={commentInfo.content}
-                      startAdornment={
-                        <InputAdornment position="start">
-                          <AccountCircle />
-                        </InputAdornment>
-                      }
-                    />
-                  </form>
-                </Box>
-                <List>
-                  {postInfo.comments?.map((info: EachComment, index) => (
-                    <Box key={index} sx={{ marginBottom: 2 }}>
-                      <Typography variant="body2">{index + 1}</Typography>
-                      <Typography variant="body2">작성자: 익명</Typography>
-                      <Typography variant="body2">
-                        {info.commentContent}
-                      </Typography>
-                      {info.isAuthor && (
-                        <Button
-                          onClick={() => handleDeleteComment(info.commentId)}
-                        >
-                          삭제하기
-                        </Button>
-                      )}
-                    </Box>
-                  ))}
-                </List>
-              </Paper>
-            </Grid2>
-          </>
-        )}
-      </Grid2>
+                {info.commentContent}
+              </Typography>
+              {info.isAuthor && (
+                <Button
+                  size="small"
+                  color="error"
+                  variant="outlined"
+                  onClick={() => handleDeleteComment(info.commentId)}
+                >
+                  삭제하기
+                </Button>
+              )}
+            </Paper>
+            {index < postInfo.comments.length - 1 && <Divider />}
+          </Box>
+        ))}
+      </List>
     </Container>
   );
 }

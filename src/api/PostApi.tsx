@@ -20,12 +20,12 @@ export const useCreatePost = async (
       credentials: 'include',
     });
     if (!response.ok) {
-      throw new Error('스터디 생성에 실패했습니다.');
+      throw new Error('질문 생성에 실패했습니다.');
     }
     return response;
   } catch (error) {
     console.error(error);
-    throw new Error('스터디 생성에 실패했습니다.');
+    throw new Error('질문 생성에 실패했습니다.');
   }
 };
 

@@ -13,6 +13,8 @@ import { CreatePostForm } from 'model/Post';
 import { useCreatePost } from 'api/PostApi';
 import { Examples } from 'constants/Questions';
 import { useGroupStore } from 'stroe/pageStore';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Import styles
 
 function PostForm() {
   const navigate = useNavigate();
@@ -32,6 +34,13 @@ function PostForm() {
     });
   };
 
+  const handleDescriptionChange = (value: string) => {
+    setFormData({
+      ...formData,
+      description: value,
+    });
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
@@ -44,13 +53,13 @@ function PostForm() {
 
   const handlePrevious = () => {
     setQuestionPage((prevPage) =>
-      prevPage > 0 ? prevPage - 1 : Examples.length - 1,
+      prevPage > 0 ? prevPage - 1 : Examples.length - 1
     );
   };
 
   const handleNext = () => {
     setQuestionPage((prevPage) =>
-      prevPage < Examples.length - 1 ? prevPage + 1 : 0,
+      prevPage < Examples.length - 1 ? prevPage + 1 : 0
     );
   };
 
@@ -65,16 +74,14 @@ function PostForm() {
       <form onSubmit={handleSubmit}>
         <Box display="flex" mt={2}>
           <Box flex={1} border={1} borderColor="lightgreen" p={2} mr={2}>
-            <TextField
-              label="질문"
-              name="description"
+            <Typography variant="h6" gutterBottom>
+              질문
+            </Typography>
+            <ReactQuill
               value={formData.description}
-              onChange={handleChange}
-              multiline
-              rows={12}
-              fullWidth
-              margin="dense"
-              variant="outlined"
+              onChange={handleDescriptionChange}
+              theme="snow"
+              style={{ height: '300px', marginBottom: '40px' }}
             />
             <TextField
               label="제목을 작성해 주세요!"
